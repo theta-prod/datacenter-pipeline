@@ -1,53 +1,36 @@
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from crawlab import save_item
-from selenium import webdriver
-
-chrome_options = webdriver.ChromeOptions()
-# chrome_options.set_capability("browserVersion", "67")
-# chrome_options.set_capability("platformName", "Windows XP")
-
-# create web driver with chrome
-# chrome_options = Options()
-chrome_options.set_capability("browserVersion", "67")
-chrome_options.set_capability("platformName", "Windows XP")
-chrome_options.add_argument('--headless')
-chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--disable-dev-shm-usage')
-# browser = webdriver.Chrome(options=chrome_options)
-browser = webdriver.Remote(
-    command_executor='http://selenium:4444',
-    options=chrome_options
-)
+from tool import ActionConfig, ActionStorge, RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, runAction
 
 
-# navigate to news list page
-browser.get('https://36kr.com/information/web_news/')
+cm: RemoteDriverConfig = {
+    "hostUrl": "http://34.127.47.231:4444",
+    "chromeVersion": "107.0",
+    "platformType": "Linux"
+}
+t1: ActionConfig = {
+    "target": "go",
+    "execute": "none",
+    "args": ["https://news.google.com/topstories?hl=zh-TW&gl=TW&ceid=TW:zh-Hant"]
+}
+t2: ActionConfig = {
+    "target": "waitSec",
+    "execute": "none",
+    "args": ["100"]
+}
 
-# get article items
-items = browser.find_elements(by=By.CSS_SELECTOR, value='.information-flow-list > .information-flow-item')
 
-# iterate items
-for item in items:
-    # fields
-    el_title = item.find_element(by=By.CSS_SELECTOR, value='.article-item-title')
-    title = el_title.text
-    url = el_title.get_attribute('href')
-    topic = item.find_element(by=By.CSS_SELECTOR, value='.kr-flow-bar-motif > a').text
-    description = item.find_element(by=By.CSS_SELECTOR, value='.article-item-description').text
-    try:
-        pic_url = item.find_element(by=By.CSS_SELECTOR, value='.article-item-pic > img').get_attribute('src')
-    except:
-        pic_url = None
+###
+###
+###
+driver = initRemoteDriver(cm)
+storage: ActionStorge = {
+    "store": {}
+}
+for c in [t1, t2]:
+    print(c["target"])
+    storage = runAction(driver, storage, c)
 
-    # save to crawlab
-    save_item({
-        'title': title,
-        'url': url,
-        'topic': topic,
-        'description': description,
-        'pic_url': pic_url,
-    })
-    print(title,url)
-print(1234)
+
+
+
+
+# quitRemoteDriver(driver)
