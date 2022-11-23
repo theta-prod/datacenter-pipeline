@@ -63,9 +63,9 @@ services:
     shm_size: 2gb
     restart: always
     environment:
-      - GRID_TIMEOUT=1500
-      - GRID_BROWSER_TIMEOUT=1500
-      - GRID_MAX_SESSION=3
+      GRID_TIMEOUT: 1500
+      GRID_BROWSER_TIMEOUT: 150
+      GRID_MAX_SESSION: 3
     ports:
       - "4444:4444"
   #   networks:
