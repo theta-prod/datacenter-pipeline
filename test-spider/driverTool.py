@@ -2,8 +2,8 @@ from typing import TypedDict, List, Callable, Dict, Any
 from selenium import webdriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-
+from commonTool import to1D
+import time
 
 ActionFuncDefinitionLabel = str
 ActionLocateFunc = Callable[[webdriver.Remote, str], List[WebElement]]
@@ -19,7 +19,7 @@ class RemoteDriverConfig(TypedDict):
 class ActionConfig(TypedDict):
     target: ActionFuncDefinitionLabel
     execute: ActionFuncDefinitionLabel
-    args: List[str]
+    args: str
 
 class ActionStorge(TypedDict):
     store: Dict[str, Any]
@@ -29,10 +29,12 @@ def initRemoteDriver(c: RemoteDriverConfig) -> webdriver.Remote:
     chrome_options.set_capability("browserVersion", c["chromeVersion"]) #type: ignore
     chrome_options.set_capability("platformName", c["platformType"]) #type: ignore
 
-    return webdriver.Remote(
+    driver = webdriver.Remote(
         command_executor = c["hostUrl"],
         options= chrome_options
     )
+    driver.implicitly_wait(25) # seconds
+    return driver
 
 
 def exchangeLocateFunc(label: ActionFuncDefinitionLabel) -> ActionLocateFunc: 
@@ -46,7 +48,9 @@ def exchangeExecuteFunc(label: ActionFuncDefinitionLabel) -> ActionExecuteFunc:
 def runAction(driver: webdriver.Remote, storage: ActionStorge, config: ActionConfig) -> ActionStorge: 
     locate = exchangeLocateFunc(config["target"])
     execute = exchangeExecuteFunc(config["execute"])
-    eles: List[WebElement] = locate(driver,*config["args"])
+
+    ##
+    eles: List[WebElement] = locate(driver,config["args"])
     result = execute(eles)
     storage['store'].update(result)
     return storage
@@ -59,23 +63,24 @@ def quitRemoteDriver(driver: webdriver.Remote):
 ###
 ### ActionLocate_Definition
 def findElementsByXpath(driver: webdriver.Remote, target: str) -> List[WebElement]: 
-    return lambda: driver.find_elements(By.XPATH, target) # type: ignore
+    print(f"findElements:XPATH:{target}")
+    return driver.find_elements(By.XPATH, target) 
 
 def gotopage(driver: webdriver.Remote, target: str) -> List[WebElement]: 
     driver.get(target)
     return []
 
 def wait_sec(driver: webdriver.Remote, target: str) -> List[WebElement]: 
-    WebDriverWait(driver, int(target))
+    time.sleep(int(target))
     return []
-    
+
 
 
 
 defaultActionLocateFuncMap: ActionLocateFuncMap = {
-    "findElementsByXpath": findElementsByXpath,
-    "findElementsByContentText": lambda d, t: findElementsByXpath(d, t),
-    "findElementByContentText": lambda d, t: findElementsByXpath(d, f"//*[contains(.,'{t}')]"),
+    "findElementByXpath": findElementsByXpath,
+    "findLinkByContainText": lambda d, target: to1D([findElementsByXpath(d, f"//a[contains(.,'{t}')]") for t in target.split("|")]),
+    "findElementByContainText": lambda d, target: to1D([findElementsByXpath(d, f"//*[contains(.,'{t}')]") for t in target.split("|")]),
     "go": gotopage,
     "waitSec": wait_sec
 }
@@ -91,11 +96,14 @@ def confirmElementIsSingle(elements: List[WebElement]) -> None:
 def confirmElementIsExist(elements: List[WebElement]) -> None: ...
 
 def clickElement(elements: List[WebElement]) -> Dict[str, Any]:
-    confirmElementIsSingle(elements)
+    # confirmElementIsSingle(elements)
     elements[0].click()
     return {}
     
 defaultActionExecuteFuncMap: ActionExecuteFuncMap = {
     "clickElement": clickElement,
+    "saveContent": lambda es: {
+         "article_titles":[e.text for e in es if e.text != '']
+    },
     "none": lambda es: {},
 }

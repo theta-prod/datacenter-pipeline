@@ -1,4 +1,5 @@
-from tool import ActionConfig, ActionStorge, RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, runAction
+from typing import List
+from driverTool import ActionConfig, ActionStorge, RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, runAction
 
 
 cm: RemoteDriverConfig = {
@@ -6,16 +7,29 @@ cm: RemoteDriverConfig = {
     "chromeVersion": "107.0",
     "platformType": "Linux"
 }
-t1: ActionConfig = {
-    "target": "go",
-    "execute": "none",
-    "args": ["https://news.google.com/topstories?hl=zh-TW&gl=TW&ceid=TW:zh-Hant"]
-}
-t2: ActionConfig = {
-    "target": "waitSec",
-    "execute": "none",
-    "args": ["100"]
-}
+ts: List[ActionConfig] = [
+    {
+        "target": "go",
+        "execute": "none",
+        "args": "https://news.google.com/topstories?hl=zh-TW&gl=TW&ceid=TW:zh-Hant"
+    },
+    {
+        "target": "findLinkByContainText",
+        "execute": "clickElement",
+        "args": "頭條新聞|焦點新聞"
+    },
+    {
+        "target": "waitSec",
+        "execute": "none",
+        "args": "25"
+    },
+    {
+        "target": "findElementByXpath",
+        "execute": "saveContent",
+        "args": "//*[self::h3 or self::h4]"
+    },
+
+]
 
 
 ###
@@ -25,12 +39,13 @@ driver = initRemoteDriver(cm)
 storage: ActionStorge = {
     "store": {}
 }
-for c in [t1, t2]:
-    print(c["target"])
+for c in ts:
+    print(c["target"], c["args"])
     storage = runAction(driver, storage, c)
+print(storage)
 
 
 
 
 
-# quitRemoteDriver(driver)
+quitRemoteDriver(driver)

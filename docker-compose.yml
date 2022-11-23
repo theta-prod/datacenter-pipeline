@@ -65,7 +65,7 @@ services:
     environment:
       SE_SESSION_REQUEST_TIMEOUT: 150
       SE_NODE_SESSION_TIMEOUT: 150
-      SE_NODE_MAX_SESSIONS: 3
+      SE_NODE_MAX_SESSIONS: 2
     ports:
       - "4444:4444"
   #   networks:
