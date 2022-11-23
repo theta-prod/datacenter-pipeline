@@ -9,6 +9,11 @@ services:
     environment:
       CRAWLAB_NODE_MASTER: "Y"
       CRAWLAB_MONGO_HOST: "mongo"
+      CRAWLAB_MONGO_PORT: "27017"  # mongo port 
+      CRAWLAB_MONGO_DB: "crawlab"  # mongo database 
+      CRAWLAB_MONGO_USERNAME: "username"  # mongo username
+      CRAWLAB_MONGO_PASSWORD: "password"  # mongo password 
+      CRAWLAB_MONGO_AUTHSOURCE: "admin"  # mongo auth source 
     volumes:
       - "./.crawlab/master:/root/.crawlab"
     ports:    
@@ -43,21 +48,30 @@ services:
   mongo:
     image: mongo
     restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "username"  # mongo username
+      MONGO_INITDB_ROOT_PASSWORD: "password"  # mongo password
     volumes:
-      - "./.mongo/data:/data/db"
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: root
-    #   MONGO_INITDB_ROOT_PASSWORD: example
+      - ".mongo/data/db:/data/db"  # 持久化 mo ngo 数据
+    # ports:
+    #   - "27017:27017"  # 开放 mongo 端口到宿主机
 
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
-  #     ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+  mongo-express:
+    image: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: "mongo"
+      ME_CONFIG_MONGODB_PORT: "27017"
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: 1
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "username"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "password"
+      ME_CONFIG_MONGODB_AUTH_DATABASE: "admin"
+      ME_CONFIG_MONGODB_AUTH_USERNAME: "username"
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: "password"
+    ports:
+      - "8081:8081"  # exposed api port
+    depends_on:
+      - mongo
 
 
   selenium:
