@@ -42,6 +42,9 @@ def runSteps(d: webdriver.Remote, ts: List[ActionConfig], storage: ActionStorge 
 ###
 
 driver = initRemoteDriver(cm)
-driver, storage = runSteps(driver, tests)
-driver, storage = runSteps(driver, loadJsonFile("Common-wait.json"))
-quitRemoteDriver(driver)
+Links: List[str] = []
+try:
+  driver, storage = runSteps(driver, tests)
+  driver, storage = runSteps(driver, loadJsonFile("Common-wait.json"))
+except Exception as e:
+  quitRemoteDriver(driver)
