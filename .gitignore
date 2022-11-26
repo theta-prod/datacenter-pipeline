@@ -1,3 +1,6 @@
 **.pyc
 .crawlab
 .mongo
+.replit
+replit.nix
+venv

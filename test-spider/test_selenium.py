@@ -15,11 +15,8 @@ chrome_options.set_capability("platformName", "LINUX")
 # chrome_options.add_argument('--no-sandbox')
 # chrome_options.add_argument('--disable-dev-shm-usage')
 # browser = webdriver.Chrome(options=chrome_options)
-browser = webdriver.Remote(
-    command_executor='http://127.0.0.1:4444',
-    options=chrome_options
-)
-
+browser = webdriver.Remote(command_executor='http://127.0.0.1:4444',
+                           options=chrome_options)
 
 # navigate to news list page
 browser.get('https://36kr.com/information/web_news/')
