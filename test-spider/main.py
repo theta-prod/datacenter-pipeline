@@ -6,8 +6,8 @@ from driverTool import ActionConfig, ActionStorge, RemoteDriverConfig, initRemot
 from typing import List, Tuple
 
 cm: RemoteDriverConfig = {
-  "hostUrl": "http://35.233.131.7:4444",
-  "chromeVersion": "103.0",
+  "hostUrl": "http://selenium:4444",
+  "chromeVersion": "107.0",
   "platformType": "Linux"
 }
 
@@ -15,13 +15,13 @@ tests: List[ActionConfig] = [
   {
     "target": "go",
     "execute": "none",
-    "targetArgs": "https://......",
+    "targetArgs": "https://news.google.com/topstories?hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
     "executeArgs": "",
   },
   {
     "target": "findElementByContainText",
     "execute": "click",
-    "targetArgs": "<Button-Label>",
+    "targetArgs": "頭條新聞|發燒新聞",
     "executeArgs": "",
   },
 ]

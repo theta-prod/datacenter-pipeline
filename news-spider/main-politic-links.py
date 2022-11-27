@@ -10,8 +10,7 @@ import json
 
 
 cm: RemoteDriverConfig = {
-  "hostUrl": "http://35.233.131.7:4444",
-  # "hostUrl": "http://selenium:4444",
+  "hostUrl": "http://selenium:4444",
   "chromeVersion": "107.0",
   "platformType": "Linux"
 }
