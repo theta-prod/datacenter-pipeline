@@ -1,0 +1,14 @@
+[
+    {
+      "target": "go",
+      "execute": "none",
+      "targetArgs": "https://www.chinatimes.com/politic/total?page=1&chdtv",
+      "executeArgs": ""
+    },
+    {
+      "target": "findElementByXpath",
+      "execute": "saveLink",
+      "targetArgs": "//*/h3[contains(@class, 'title')]/a",
+      "executeArgs": ""
+    }
+]

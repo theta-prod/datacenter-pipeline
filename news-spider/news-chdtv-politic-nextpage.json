@@ -1,0 +1,20 @@
+[
+  {
+    "target": "findLinkByContainText",
+    "execute": "click",
+    "targetArgs": "下一頁",
+    "executeArgs": ""
+  },
+  {
+    "target": "waitSec",
+    "execute": "none",
+    "targetArgs": "10",
+    "executeArgs": ""
+  },
+  {
+    "target": "findElementByXpath",
+    "execute": "saveLink",
+    "targetArgs": "//*/h3[contains(@class, 'title')]/a",
+    "executeArgs": ""
+  }
+]
