@@ -91,5 +91,8 @@ for url in Links:
       print(result)
     quitRemoteDriver(driver)
   except Exception as e:
-    print(e) 
+    save_item_to_kibana({
+      "msg": str(e),
+      "status": "ERROR"
+    }) 
   
