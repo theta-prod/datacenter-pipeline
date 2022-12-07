@@ -5,14 +5,14 @@ from selenium import webdriver
 from driverTool import ActionConfig, ActionStorge, RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, runAction
 from typing import List, Tuple, Dict
 import json
-# from crawlab import save_item
+from crawlab import save_item
+from db import save_item_to_kibana
 
 
 
 cm: RemoteDriverConfig = {
-  "hostUrl": "http://35.233.131.7:4444",
-  # "hostUrl": "http://selenium:4444",
-  "chromeVersion": "107.0",
+  "hostUrl": "http://selenium:4444",
+  "chromeVersion": "108.0",
   "platformType": "Linux"
 }
 def runSteps(d: webdriver.Remote, ts: List[ActionConfig], storage: ActionStorge = {"store": {}}) -> Tuple[webdriver.Remote, ActionStorge]:
@@ -86,7 +86,8 @@ for url in Links:
           "content":body
         }
         
-      # save_item(result)
+      save_item(result)
+      save_item_to_kibana(result)
       print(result)
     quitRemoteDriver(driver)
   except Exception as e:
