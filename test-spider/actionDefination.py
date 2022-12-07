@@ -124,13 +124,24 @@ def typingElement(elements: List[WebElement], agrs: str) -> Dict[str, Any]:
   elements[0].send_keys(agrs)  # type: ignore
   return {}
 
+def saveAttribute(elements: List[WebElement], agrs: str) -> Dict[str, Any]:
+  returnArr: List[str] = []
+  for e in elements:
+    returnArr.append(e.get_attribute(agrs))# type: ignore
+  return {
+    agrs: returnArr
+  }
 
+def saveContent(elements: List[WebElement], agrs: str) -> Dict[str, Any]:
+  return {
+    agrs: [e.text for e in elements]
+  }
 defaultActionExecuteFuncMap: ActionExecuteFuncMap = {
   "click": clickElement,
   "clickAll": clickAllElement,
-  "saveContent": lambda es, a: {
-    "article_titles": [e.text for e in es if e.text != '']
-  },
+  "saveContent": saveContent,
+  "saveLink": lambda es, a: saveAttribute(es,'href'),
+  "saveByAttr": saveAttribute,
   "typing": typingElement,
   "none": lambda es, a: {},
 }

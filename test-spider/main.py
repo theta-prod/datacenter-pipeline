@@ -3,11 +3,11 @@ from driverTool import RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, A
 from commonTool import loadJsonFile
 from selenium import webdriver
 from driverTool import ActionConfig, ActionStorge, RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, runAction
-from typing import List
+from typing import List, Tuple
 
 cm: RemoteDriverConfig = {
-  "hostUrl": "http://127.0.0.1:4444",
-  "chromeVersion": "103.0",
+  "hostUrl": "http://selenium:4444",
+  "chromeVersion": "107.0",
   "platformType": "Linux"
 }
 
@@ -15,27 +15,26 @@ tests: List[ActionConfig] = [
   {
     "target": "go",
     "execute": "none",
-    "targetArgs": "https://......",
+    "targetArgs": "https://news.google.com/topstories?hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
     "executeArgs": "",
   },
   {
     "target": "findElementByContainText",
     "execute": "click",
-    "targetArgs": "<Button-Label>",
+    "targetArgs": "頭條新聞|發燒新聞",
     "executeArgs": "",
   },
 ]
 
 
-def runSteps(d: webdriver.Remote, ts: List[ActionConfig]) -> webdriver.Remote:
-  storage: ActionStorge = {"store": {}}
+def runSteps(d: webdriver.Remote, ts: List[ActionConfig], storage: ActionStorge = {"store": {}}) -> Tuple[webdriver.Remote, ActionStorge]:
   for c in ts:
     print(c["target"], c["targetArgs"])
     # print(f"Windows: {d.window_handles}")
     storage = runAction(d, storage, c)
-  print(storage)
-
-  return d
+  # print(storage)
+       
+  return d, storage
 
 
 ###
@@ -43,6 +42,9 @@ def runSteps(d: webdriver.Remote, ts: List[ActionConfig]) -> webdriver.Remote:
 ###
 
 driver = initRemoteDriver(cm)
-driver = runSteps(driver, tests)
-driver = runSteps(driver, loadJsonFile("Common-wait.json"))
-quitRemoteDriver(driver)
+Links: List[str] = []
+try:
+  driver, storage = runSteps(driver, tests)
+  driver, storage = runSteps(driver, loadJsonFile("Common-wait.json"))
+except Exception as e:
+  quitRemoteDriver(driver)
