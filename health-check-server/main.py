@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import psutil
 from crawlab import save_item
-
+from db import save_item_to_kibana
 # gives a single float value
 cpu = psutil.cpu_percent()
 # gives an object with many fields
@@ -25,8 +25,7 @@ print (f"Free: {hdd.free / (2**30)} GiB")
 
 print(f"cpu: {cpu}")
 print(f"ram: {ram}")
-
-save_item({
+data = {
   "cpu": f"{cpu} %",
   "ram": ram,
   "dict": {
@@ -35,5 +34,6 @@ save_item({
     "Free": f"{hdd.free / (2**30)} GiB",
     "Used Percent": f"{hdd.used/hdd.total} %"
   }
-})
-
+}
+save_item(data)
+save_item_to_kibana(data)
