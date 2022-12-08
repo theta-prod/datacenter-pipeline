@@ -2,7 +2,7 @@
 
 - **Metadata** : `type: REF` `scope: Selenium` 
 - **Techs Need** : `python`
-- **Status** : `ongoing`
+- **Status** : `done`
 
 ## ✨ You should already know
 
@@ -20,13 +20,13 @@
 | main.py | descript how to run a job | -- |
 | driverTool.py  | -- | -- |
 | actionDefination.py  | -- | -- |
-|   | -- | -- |
 
 
 
 ## ✨  Sections
 
 <br/>
+
 ---
 ### **主要執行(main.py)**
 > 進入點
@@ -73,6 +73,7 @@ def runSteps(d: webdriver.Remote, ts: List[ActionConfig]) -> webdriver.Remote:
 
 
 <br/>
+
 ---
 ### **driverTool.py**
 > 透過`selenium`來驅動chrome
@@ -154,6 +155,7 @@ def runAction(driver: webdriver.Remote, storage: ActionStorge,
 
 
 <br/>
+
 ---
 ### **actionDefination.py**
 > `任務範本模組`負責定義任務的實際執行內容
