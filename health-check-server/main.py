@@ -26,13 +26,13 @@ print (f"Free: {hdd.free / (2**30)} GiB")
 print(f"cpu: {cpu}")
 print(f"ram: {ram}")
 data = {
-  "cpu": f"{cpu} %",
+  "cpu": cpu,
   "ram": ram,
   "dict": {
     "Total": f"{hdd.total / (2**30)} GiB",
     "Used": f"{hdd.used / (2**30)} GiB",
     "Free": f"{hdd.free / (2**30)} GiB",
-    "Used Percent": f"{hdd.used/hdd.total} %"
+    "Used Percent": hdd.used/hdd.total
   }
 }
 save_item(data)
