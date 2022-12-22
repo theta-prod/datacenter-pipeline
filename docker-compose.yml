@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.8'
 
 # networks:
 #     web:
@@ -6,6 +6,10 @@ version: '3.3'
 services:
   master: 
     image: crawlabteam/crawlab:latest
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
     restart: always
     environment:
       CRAWLAB_NODE_MASTER: "Y"
@@ -48,6 +52,10 @@ services:
 
   mongo:
     image: mongo:4.4.4
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: "username"  # mongo username
@@ -79,7 +87,10 @@ services:
 
   selenium:
     image: "selenium/standalone-chrome:latest@2e1f59fb711b"
-    shm_size: 2gb
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
     restart: always
     environment:
       SE_SESSION_REQUEST_TIMEOUT: 150
