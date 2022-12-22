@@ -86,7 +86,7 @@ services:
 
 
   selenium:
-    image: "selenium/standalone-chrome:latest@2e1f59fb711b"
+    image: "selenium/standalone-chrome:latest"
     deploy:
       resources:
         limits:
