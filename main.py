@@ -29,9 +29,9 @@ data = {
   "cpu": cpu,
   "ram": ram,
   "dict": {
-    "Total": f"{hdd.total / (2**30)} GiB",
-    "Used": f"{hdd.used / (2**30)} GiB",
-    "Free": f"{hdd.free / (2**30)} GiB",
+    "Total": hdd.total / (2**30)},
+    "Used": hdd.used / (2**30),
+    "Free": hdd.free / (2**30),
     "Used Percent": hdd.used/hdd.total
   }
 }
