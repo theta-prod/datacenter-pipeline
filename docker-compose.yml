@@ -55,13 +55,13 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: "username"  # mongo username
       MONGO_INITDB_ROOT_PASSWORD: "password"  # mongo password
-    #volumes:
-    #  - ".mongo/data/db:/data/db"  # 持久化 mo ngo 数据
+    volumes:
+     - ".mongo/data/db:/data/db"  # 持久化 mo ngo 数据
     # ports:
     #   - "27017:27017"  # 开放 mongo 端口到宿主机
 
