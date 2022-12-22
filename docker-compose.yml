@@ -94,12 +94,12 @@ services:
     restart: always
     environment:
       SE_SESSION_REQUEST_TIMEOUT: 150
-      SE_SESSION_RETRY_INTERVAL: 2
+#       SE_SESSION_RETRY_INTERVAL: 2
       SE_NODE_SESSION_TIMEOUT: 150
       SE_NODE_MAX_SESSIONS: 2
       SE_VNC_NO_PASSWORD: 1
       SE_VNC_VIEW_ONLY: 1
     ports:
-      - "4444:4444"
+      - "8000:4444"
   #   networks:
   #     - web
