@@ -29,6 +29,7 @@ def initRemoteDriver(c: RemoteDriverConfig) -> webdriver.Remote:
   chrome_options.add_argument('--disable-notifications')  #type: ignore
   chrome_options.add_argument('--disable-gpu')  #type: ignore
   chrome_options.add_argument('--headless')  #type: ignore
+  chrome_options.add_argument('--no-sandbox')  #type: ignore
 
 
   # chrome_options.add_experimental_option("prefs",{"profile.default_content_setting_values.notifications" : 2})  #type: ignore

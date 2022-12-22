@@ -11,7 +11,7 @@ from db import save_item_to_kibana
 
 
 cm: RemoteDriverConfig = {
-  "hostUrl": "http://selenium:4444",
+  "hostUrl": "http://140.115.126.20:8000",
   "chromeVersion": "108.0",
   "platformType": "Linux"
 }
