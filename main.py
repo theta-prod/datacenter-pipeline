@@ -1,13 +1,13 @@
 # main.py
 from driverTool import RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, ActionConfig
-from commonTool import loadJsonFile
+from commonTool import cleanHtml, loadJsonFile
 from selenium import webdriver
 from driverTool import ActionConfig, ActionStorge, RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, runAction
 from typing import List, Tuple, Dict
 import json
-from crawlab import save_item
-from db import save_item_to_kibana
-
+# from crawlab import save_item
+# from db import save_item_to_kibana
+import time
 
 
 cm: RemoteDriverConfig = {
@@ -29,70 +29,104 @@ def runSteps(d: webdriver.Remote, ts: List[ActionConfig], storage: ActionStorge 
 ###
 ###
 ###
-goHomePage: List[ActionConfig] = loadJsonFile("news-chdtv-politic-homepage.json")
-goNextPage: List[ActionConfig] = loadJsonFile("news-chdtv-politic-nextpage.json")
-driver = initRemoteDriver(cm)
-Links: List[str] = []
-try:
-  driver, storage = runSteps(driver, goHomePage)
-  Links.extend(storage["store"]["href"])
-except Exception as e:
-  print(e) 
+# goHomePage: List[ActionConfig] = loadJsonFile("news-chdtv-politic-homepage.json")
+# goNextPage: List[ActionConfig] = loadJsonFile("news-chdtv-politic-nextpage.json")
+# driver = initRemoteDriver(cm)
+# Links: List[str] = []
+# try:
+#   driver, storage = runSteps(driver, goHomePage)
+#   Links.extend(storage["store"]["href"])
+# except Exception as e:
+#   print(e) 
   
 
 
+# try:
+#     for _ in range(3):
+#       driver, storage = runSteps(driver, goNextPage)
+#       Links.extend(storage["store"]["href"])
+# except Exception as e:
+#   print(e) 
+# finally:
+#   quitRemoteDriver(driver)
+
+
+###
+###
+###
+
+driver = initRemoteDriver(cm)
 try:
-    for _ in range(3):
-      driver, storage = runSteps(driver, goNextPage)
-      Links.extend(storage["store"]["href"])
-except Exception as e:
-  print(e) 
-finally:
-  quitRemoteDriver(driver)
-
-
-###
-###
-###
-print(f"Links: {json.dumps(Links, ensure_ascii=False)}")
-for url in Links:
-  try:
-    driver = initRemoteDriver(cm)
-    if url.startswith("https://www.chinatimes.com/"):
+  driver, storage = runSteps(driver,[{
+      "target": "go",
+      "execute": "none",
+      "targetArgs": "https://ndltd.ncl.edu.tw/cgi-bin/gs32/gsweb.cgi?o=d",
+      "executeArgs": ""
+    },
+    {
+      "target": "findElementByXpath",
+      "execute": "saveLink",
+      "targetArgs": "//*[@id='hotlv_disp1']/a",
+      "executeArgs": "links"
+    }
+  ])
+  # print(f"storage: {storage}")
+  topic_links: List[str] = storage["store"]['href']
+  for topic_url in topic_links[-3:]:
+    driver, storage = runSteps(driver,[{
+        "target": "go",
+        "execute": "none",
+        "targetArgs": topic_url,
+        "executeArgs": ""
+      },
+      {
+        "target": "findElementByXpath",
+        "execute": "saveLink",
+        "targetArgs": "//*[contains(@class, 'slink')]",
+        "executeArgs": "links"
+      }
+    ])
+    page_links: List[str] = storage["store"]['href']
+    # print(f"storage: {storage}")
+    for page_link in page_links:
       driver, storage = runSteps(driver,[{
           "target": "go",
           "execute": "none",
-          "targetArgs": url,
+          "targetArgs": page_links[0],
+          "executeArgs": ""
+        },
+        {
+          "target": "waitSec",
+          "execute": "none",
+          "targetArgs": "1",
           "executeArgs": ""
         },
         {
           "target": "findElementByXpath",
           "execute": "saveContent",
-          "targetArgs": "//*/h1[contains(@class, 'article-title')]",
-          "executeArgs": "article-title"
+          "targetArgs": "//*[@id='format0_disparea']/tbody/tr[4]/td",
+          "executeArgs": "title"
         },
         {
           "target": "findElementByXpath",
-          "execute": "saveContent",
-          "targetArgs": "//*/div[contains(@class, 'article-body')]/p",
-          "executeArgs": "article-body"
-        }]
-      )
-      tilte:str = storage["store"]["article-title"][0]
-      body:str = "\n".join(storage["store"]["article-body"])
-      result = {
-          "tilte": tilte,
-          "url": url,
-          "content":body
+          "execute": "saveByAttr",
+          "targetArgs": "//td[contains(@class, 'stdncl2')]/div",
+          "executeArgs": "innerHTML"
         }
-        
-      save_item(result)
-      save_item_to_kibana(result)
-      print(result)
-    quitRemoteDriver(driver)
-  except Exception as e:
-    save_item_to_kibana({
-      "msg": str(e),
-      "status": "ERROR"
-    }) 
-  
+      ])
+      
+      # links: List[str] = storage["store"]['href']
+      # print(f"storage: {storage['store']['title']}")
+      # print(f"storage: {[cleanHtml(text) for text in storage['store']['innerHTML']]}")
+      body = {colName: cleanHtml(text) for colName, text in zip(["summary_zh","summary_en","sections","reference"],storage['store']['innerHTML'][:4])}
+      body['title']= storage['store']['title']
+      print(body)
+      raise RuntimeError
+
+  # save_item(result)
+  # save_item_to_kibana(result)
+  time.sleep(15)
+  quitRemoteDriver(driver)
+except Exception as e:
+  print(f"ERROR: {e}")
+  quitRemoteDriver(driver)

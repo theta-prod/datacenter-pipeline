@@ -133,6 +133,7 @@ def saveAttribute(elements: List[WebElement], agrs: str) -> Dict[str, Any]:
   }
 
 def saveContent(elements: List[WebElement], agrs: str) -> Dict[str, Any]:
+  
   return {
     agrs: [e.text for e in elements]
   }
