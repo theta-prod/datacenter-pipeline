@@ -92,7 +92,7 @@ try:
       driver, storage = runSteps(driver,[{
           "target": "go",
           "execute": "none",
-          "targetArgs": page_links[0],
+          "targetArgs": page_link,
           "executeArgs": ""
         },
         {
@@ -118,8 +118,8 @@ try:
       # links: List[str] = storage["store"]['href']
       # print(f"storage: {storage['store']['title']}")
       # print(f"storage: {[cleanHtml(text) for text in storage['store']['innerHTML']]}")
-      body = {colName: cleanHtml(text) for colName, text in zip(["summary_zh","summary_en","sections","reference"],storage['store']['innerHTML'][:4])}
-      body['title']= storage['store']['title']
+      body = {colName: cleanHtml(text) for colName, text in zip(["summary_zh","summary_en","sections","reference"],storage['store']['innerHTML'][:5])}
+      body['title']= storage['store']['title'][0]
       print(body)
       raise RuntimeError
 
