@@ -65,9 +65,9 @@ def save_item_to_kibana(data: DocContent)-> DbOPResponse:
   client = initClient({
       "indexName": "news-index",
       "timezone": "Asia/Taipei",
-      "username": "elastic",
-      "password": "elastic-pasaword",
-      "host": "http://140.115.126.20:9200"
+      "username": "<username>",
+      "password": "<pws>",
+      "host": "<host>"
   })
   metadata: DocContent = {
       'from': '中時電子報',
