@@ -63,7 +63,7 @@ def insert(ec: ElasticClient, doc: DocContent) -> DbOPResponse:
 
 def save_item_to_kibana(data: DocContent)-> DbOPResponse:
   client = initClient({
-      "indexName": "news-index",
+      "indexName": "paper-index",
       "timezone": "Asia/Taipei",
       "username": "<username>",
       "password": "<pws>",
