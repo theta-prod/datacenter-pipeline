@@ -20,7 +20,7 @@ services:
       CRAWLAB_MONGO_PASSWORD: "password"  # mongo password 
       CRAWLAB_MONGO_AUTHSOURCE: "admin"  # mongo auth source 
     volumes:
-      - "./.crawlab/master:/root/.crawlab"
+      - "./.crawlab/master:/data"
     ports:    
       - "8080:8080"
     depends_on:
