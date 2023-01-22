@@ -6,6 +6,9 @@ from selenium.webdriver.common.by import By
 from commonTool import to1D
 import time
 
+  
+
+
 ActionFuncDefinitionLabel = str
 ActionLocateFunc = Callable[[webdriver.Remote, str], List[WebElement]]
 ActionExecuteFunc = Callable[[List[WebElement], str], Dict[str, Any]]
@@ -13,6 +16,14 @@ ActionLocateFuncMap = Dict[ActionFuncDefinitionLabel, ActionLocateFunc]
 ActionExecuteFuncMap = Dict[ActionFuncDefinitionLabel, ActionExecuteFunc]
 
 ### ActionLocate_Definition
+def ex_findContentBlock(driver: webdriver.Remote,
+                        target: str) -> List[WebElement]:
+
+  es = findElementsByXpath(driver, f"//a[@title=\"{target}\"]")
+  if len(es) > 0:
+    es[0].click()
+
+  return driver.find_elements(By.XPATH, "//div[@id='aa' and contains(@style,'display: block')]/*[@id='format0_disparea']/tbody/tr/td[2]")
 
 
 def findElementsByXpath(driver: webdriver.Remote,
@@ -58,6 +69,7 @@ def switchAlertWindow(driver: webdriver.Remote,
 
 
 defaultActionLocateFuncMap: ActionLocateFuncMap = {
+  "ex_findContentBlock": ex_findContentBlock,
   "findElementByXpath":
   findElementsByXpath,
   "findLastElementsByXpath":
@@ -137,6 +149,9 @@ def saveContent(elements: List[WebElement], agrs: str) -> Dict[str, Any]:
   return {
     agrs: [e.text for e in elements]
   }
+
+
+
 defaultActionExecuteFuncMap: ActionExecuteFuncMap = {
   "click": clickElement,
   "clickAll": clickAllElement,

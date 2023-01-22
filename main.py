@@ -3,10 +3,10 @@ from driverTool import RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, A
 from commonTool import cleanHtml, loadJsonFile
 from selenium import webdriver
 from driverTool import ActionConfig, ActionStorge, RemoteDriverConfig, initRemoteDriver, quitRemoteDriver, runAction
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Any
 import json
 # from crawlab import save_item
-# from db import save_item_to_kibana
+# from db import save_item_to_kibana, closeDB
 import time
 
 
@@ -56,24 +56,26 @@ def runSteps(d: webdriver.Remote, ts: List[ActionConfig], storage: ActionStorge 
 ###
 
 driver = initRemoteDriver(cm)
+driver.implicitly_wait(2)
+
 try:
-  driver, storage = runSteps(driver,[{
-      "target": "go",
-      "execute": "none",
-      "targetArgs": "https://ndltd.ncl.edu.tw/cgi-bin/gs32/gsweb.cgi?o=d",
-      "executeArgs": ""
-    },
-    {
-      "target": "findElementByXpath",
-      "execute": "saveLink",
-      "targetArgs": "//*[@id='hotlv_disp1']/a",
-      "executeArgs": "links"
-    }
-  ])
-  # print(f"storage: {storage}")
-  topic_links: List[str] = storage["store"]['href']
-  for topic_url in topic_links[-3:]:
+  for collectionIdx in range(3,1,-1):
     driver, storage = runSteps(driver,[{
+        "target": "go",
+        "execute": "none",
+        "targetArgs": "https://ndltd.ncl.edu.tw/cgi-bin/gs32/gsweb.cgi?o=d",
+        "executeArgs": ""
+      },
+      {
+        "target": "findElementByXpath",
+        "execute": "saveLink",
+        "targetArgs": "//*[@id='hotlv_disp1']/a",
+        "executeArgs": "links"
+      }
+    ])
+    topic_url: str = storage["store"]['href'][-1*collectionIdx]
+    driver, storage = runSteps(driver,[
+      {
         "target": "go",
         "execute": "none",
         "targetArgs": topic_url,
@@ -89,6 +91,7 @@ try:
     page_links: List[str] = storage["store"]['href']
     # print(f"storage: {storage}")
     for page_link in page_links:
+      print(f"page_link: {page_link}")
       driver, storage = runSteps(driver,[{
           "target": "go",
           "execute": "none",
@@ -103,30 +106,57 @@ try:
         },
         {
           "target": "findElementByXpath",
+          "execute": "saveByAttr",
+          "targetArgs": "//input[@id='fe_text1']",
+          "executeArgs": "value"
+        },
+        # {
+        #   "target": "findElementByXpath",
+        #   "execute": "saveContent",
+        #   "targetArgs": "//*[@id='format0_disparea']/tbody/tr[4]/td",
+        #   "executeArgs": "research.title"
+        # },
+        {
+          "target": "ex_findContentBlock",
           "execute": "saveContent",
-          "targetArgs": "//*[@id='format0_disparea']/tbody/tr[4]/td",
-          "executeArgs": "title"
+          "targetArgs": "外文摘要",
+          "executeArgs": "research.sum_en"
         },
         {
-          "target": "findElementByXpath",
-          "execute": "saveByAttr",
-          "targetArgs": "//td[contains(@class, 'stdncl2')]/div",
-          "executeArgs": "innerHTML"
-        }
+          "target": "ex_findContentBlock",
+          "execute": "saveContent",
+          "targetArgs": "摘要",
+          "executeArgs": "research.sum_zh"
+        },
+        {
+          "target": "ex_findContentBlock",
+          "execute": "saveContent",
+          "targetArgs": "目次",
+          "executeArgs": "research.sessions"
+        },
+        {
+          "target": "ex_findContentBlock",
+          "execute": "saveContent",
+          "targetArgs": "參考文獻",
+          "executeArgs": "research.ref"
+        },
+        
       ])
       
       # links: List[str] = storage["store"]['href']
-      # print(f"storage: {storage['store']['title']}")
-      # print(f"storage: {[cleanHtml(text) for text in storage['store']['innerHTML']]}")
-      body = {colName: cleanHtml(text) for colName, text in zip(["summary_zh","summary_en","sections","reference"],storage['store']['innerHTML'][:5])}
-      body['title']= storage['store']['title'][0]
-      print(body)
-      raise RuntimeError
+      # print(f"storage: {storage['store']}")
+      colNames = ["research.ref","research.sessions","research.sum_zh","research.sum_en"]
+      result = {}
+      for c in colNames:
+        if len(storage['store'][c])>0:
+          result[c] = storage['store'][c][0]
+      result["research.link"] = storage['store']['value'][0]
+      result["research.title"] = driver.title
+      # print(result)
 
       # save_item(result)
       # save_item_to_kibana(result)
-  time.sleep(15)
-  quitRemoteDriver(driver)
 except Exception as e:
   print(f"ERROR: {e}")
-  quitRemoteDriver(driver)
+# closeDB()
+quitRemoteDriver(driver)

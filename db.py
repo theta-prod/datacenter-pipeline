@@ -60,24 +60,25 @@ def insert(ec: ElasticClient, doc: DocContent) -> DbOPResponse:
     return ec['client'].index(index=ec['configMap']['indexName'], document=doc) # type:ignore
 
 
-
-def save_item_to_kibana(data: DocContent)-> DbOPResponse:
-  client = initClient({
+client = initClient({
       "indexName": "paper-index",
       "timezone": "Asia/Taipei",
-      "username": "<username>",
-      "password": "<pws>",
-      "host": "<host>"
+      "username": "elastic",
+      "password": "elastic-pasaword",
+      "host": "http://140.115.126.20:9200"
   })
+def save_item_to_kibana(data: DocContent)-> DbOPResponse:
+  print()
+
   metadata: DocContent = {
-      'from': '中時電子報',
+      'from': '台灣碩博士論文網',
       'timestamp': datetime.now().astimezone()
   }
   r = insert(client, {
     "meta": metadata,
     "data": data
   })
-
+def closeDB():
   close(client)
 
 #save_item_to_kibana({
